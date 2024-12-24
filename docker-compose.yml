@@ -1,0 +1,165 @@
+volumes:
+  tickets-db:
+    driver: local
+  analyst-db:
+    driver: local
+  triage-db:
+    driver: local
+  auth-db:
+    driver: local
+  communication-db:
+    driver: local
+
+services:
+  tickets:
+    stop_grace_period: 1s
+    build: .
+    ports:
+      - 8080:8080
+    expose:
+      - 8080
+    volumes:
+      - ./tickets:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - main
+    depends_on:
+      - tickets-db
+  tickets-db:
+    image: postgres
+    environment:
+      POSTGRES_USER: default
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: tickets
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    volumes:
+      - tickets-db:/var/lib/postgresql/data
+    networks:
+      - main
+  
+  analyst:
+    stop_grace_period: 1s
+    build: .
+    ports:
+      - 8081:8080
+    expose:
+      - 8080
+    volumes:
+      - ./analyst:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - main
+    depends_on:
+      - analyst-db
+  analyst-db:
+    image: postgres
+    environment:
+      POSTGRES_USER: default
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: analyst
+    ports:
+      - 5433:5432
+    expose:
+      - 5432
+    volumes:
+      - analyst-db:/var/lib/postgresql/data
+    networks:
+      - main
+  
+  triage:
+    stop_grace_period: 1s
+    build: .
+    ports:
+      - 8082:8080
+    volumes:
+      - ./triage:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - main
+    depends_on:
+      - triage-db
+  triage-db:
+    image: postgres
+    environment:
+      POSTGRES_USER: default
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: triage
+    ports:
+      - 5434:5432
+    expose:
+      - 5432
+    volumes:
+      - triage-db:/var/lib/postgresql/data
+    networks:
+      - main
+
+ 
+  auth:
+    stop_grace_period: 1s
+    build: .
+    ports:
+      - 8083:8080
+    expose:
+      - 8080
+    volumes:
+      - ./auth:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - main
+    depends_on:
+      - auth-db
+  auth-db:
+    image: postgres
+    environment:
+      POSTGRES_USER: default
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: auth
+    ports:
+      - 5435:5432
+    expose:
+      - 5432
+    volumes:
+      - auth-db:/var/lib/postgresql/data
+    networks:
+      - main
+
+  communication:
+    stop_grace_period: 1s
+    build: .
+    ports:
+      - 8084:8080
+    expose:
+      - 8080
+    volumes:
+      - ./communication:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - main
+    depends_on:
+      - communication-db
+  communication-db:
+    image: postgres
+    environment:
+      POSTGRES_USER: default
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: communication
+    ports:
+      - 5436:5432
+    expose:
+      - 5432
+    volumes:
+      - communication-db:/var/lib/postgresql/data
+    networks:
+      - main
+
+networks:
+  main:
+    driver: bridge
