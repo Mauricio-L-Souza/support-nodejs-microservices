@@ -42,6 +42,14 @@ Projeto de API de Suporte criado com o intuito de ensinar a arquitetura de micro
 - `triage`: Serviço de triagem.
 - `communication`: Serviço de comunicação.
 
+## Como rodar o projeto
+
+1. Clonar o repositório
+2. Em cada serviço, rodar o comando `cp .env.example .env` para criar o arquivo .env.
+3. Rodar o comando `docker compose up -d` para rodar todos os serviços.
+
+- Os serviços instalam as dependências e rodam automaticamente.
+
 ## Tecnologias
 
 - Node.js
